@@ -11,7 +11,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="authoring-tool" content="Adobe_Animate_CC">
-<title>3학년_4_80p_발자랑손자랑_20240310</title>
+<title>3학년_4_80p_발자랑손자랑_20240319</title>
 <!-- write your code here -->
 <style>
   #animation_container, #_preload_div_ {
@@ -589,7 +589,7 @@ if (reversed == null) { reversed = false; }
 }).prototype = p = new cjs.MovieClip();
 p.nominalBounds = new cjs.Rectangle(-545,39.9,70,70);
 // stage content:
-(lib._3학년_4_80p_발자랑손자랑_20240310 = function(mode,startPosition,loop,reversed) {
+(lib._3학년_4_80p_발자랑손자랑_20240319 = function(mode,startPosition,loop,reversed) {
 if (loop == null) { loop = false; }
 if (reversed == null) { reversed = false; }
 	var props = new Object();
@@ -599,7 +599,7 @@ if (reversed == null) { reversed = false; }
 	props.loop = loop;
 	props.reversed = reversed;
 	cjs.MovieClip.apply(this,[props]);
-	this.actionFrames = [0,511,512,1021,1022,1032,1868,1869,2374];
+	this.actionFrames = [0,510,511,512,1020,1021,1022,1032,1867,1868,1869,2374];
 	this.streamSoundSymbolsList[0] = [{id:"stos_student",startFrame:0,endFrame:512,loop:1,offset:0}];
 	this.streamSoundSymbolsList[512] = [{id:"stos_expert",startFrame:512,endFrame:1022,loop:1,offset:0}];
 	this.streamSoundSymbolsList[1032] = [{id:"stos_singtosong",startFrame:1032,endFrame:1869,loop:1,offset:0}];
@@ -654,6 +654,10 @@ if (reversed == null) { reversed = false; }
 			_this.play_btn.visible = true;
 		});
 	}
+	this.frame_510 = function() {
+		this.gotoAndStop('노래듣기');
+		this.play_btn.visible = true;
+	}
 	this.frame_511 = function() {
 		this.gotoAndStop('노래듣기');
 		this.play_btn.visible = true;
@@ -662,6 +666,10 @@ if (reversed == null) { reversed = false; }
 		var soundInstance = playSound("stos_expert",0);
 		this.InsertIntoSoundStreamData(soundInstance,512,1022,1);
 		this.stop();
+	}
+	this.frame_1020 = function() {
+		this.gotoAndStop('전문가창');
+		this.play_btn.visible = true;
 	}
 	this.frame_1021 = function() {
 		this.gotoAndStop('전문가창');
@@ -673,6 +681,10 @@ if (reversed == null) { reversed = false; }
 	this.frame_1032 = function() {
 		var soundInstance = playSound("stos_singtosong",0);
 		this.InsertIntoSoundStreamData(soundInstance,1032,1869,1);
+	}
+	this.frame_1867 = function() {
+		this.gotoAndStop('따라부르');
+		this.play_btn.visible = true;
 	}
 	this.frame_1868 = function() {
 		this.gotoAndStop('따라부르');
@@ -688,7 +700,7 @@ if (reversed == null) { reversed = false; }
 		this.play_btn.visible = true;
 	}
 	// actions tween:
-	this.timeline.addTween(cjs.Tween.get(this).call(this.frame_0).wait(511).call(this.frame_511).wait(1).call(this.frame_512).wait(509).call(this.frame_1021).wait(1).call(this.frame_1022).wait(10).call(this.frame_1032).wait(836).call(this.frame_1868).wait(1).call(this.frame_1869).wait(505).call(this.frame_2374).wait(1));
+	this.timeline.addTween(cjs.Tween.get(this).call(this.frame_0).wait(510).call(this.frame_510).wait(1).call(this.frame_511).wait(1).call(this.frame_512).wait(508).call(this.frame_1020).wait(1).call(this.frame_1021).wait(1).call(this.frame_1022).wait(10).call(this.frame_1032).wait(835).call(this.frame_1867).wait(1).call(this.frame_1868).wait(1).call(this.frame_1869).wait(505).call(this.frame_2374).wait(1));
 	// chapter_no
 	this.instance = new lib.main_no("single",15);
 	this.instance.setTransform(55.55,75.25,1,1,0,0,0,30.4,30.4);
@@ -740,22 +752,22 @@ if (reversed == null) { reversed = false; }
 	this.shape_11.setTransform(1096.879,237.0634,2.447,2.4471);
 	this.shape_12 = new cjs.Shape();
 	this.shape_12.graphics.f("#231916").s().p("AgbAnIAAgaIAGAAIAAAUIAxAAIAAAGgAATATIAAg5IAGAAIAAAXIAMAAIAAAFIgMAAIAAAdgAgkggIAnAAIAAAGIghAAIAAAZIAqgCIAAAEIgwADg");
-	this.shape_12.setTransform(255.3209,263.4923,2.447,2.4471);
+	this.shape_12.setTransform(256.3209,263.4923,2.447,2.4471);
 	this.shape_13 = new cjs.Shape();
 	this.shape_13.graphics.f("#231916").s().p("AgTAkQgIgFAAgGQAAgGAIgFQAHgFAOABQAOgBAHAFQAIAFAAAGQAAAGgIAFQgHAFgOgBQgOABgHgFgAgNASQgHACAAAFQAAAEAHADQAGADAJAAQAJAAAGgDQAHgDAAgEQAAgFgHgCQgGgDgJAAQgJAAgGADgAAWAIIAAgwIAGAAIAAAUIAMAAIAAAGIgMAAIAAAWgAgnAAIAHgEQAEgCAFgEIAFgHIACgJIAAgDIgSAAIAAgFIAqAAIAAAFIgRAAIAAADQAAADACAGIAFAGQADAFAEABIAHADIgEAEIgGgCQgEgCgDgDIgEgEIgEgFIgDAFIgFAGIgIAFIgGACg");
-	this.shape_13.setTransform(233.8484,263.9206,2.447,2.4471);
+	this.shape_13.setTransform(234.8484,263.9206,2.447,2.4471);
 	this.shape_14 = new cjs.Shape();
 	this.shape_14.graphics.f("#231916").s().p("AAZAoIAAhPIAHAAIAABPgAgfgGIAfAAIAAgTIgfAAIAAgFIAmAAIAAAdIgfAAIAAATIArgCIAAAFIgyACg");
-	this.shape_14.setTransform(212.07,263.7371,2.447,2.4471);
+	this.shape_14.setTransform(213.07,263.7371,2.447,2.4471);
 	this.shape_15 = new cjs.Shape();
 	this.shape_15.graphics.f("#231916").s().p("AgnAeIAAgFIAkAAIAAgUIgZAAIAAgiIA5AAIAAAiIgaAAIAAAUIAkAAIAAAFgAgVAAIAqAAIAAgYIgqAAg");
-	this.shape_15.setTransform(190.9646,263.37,2.447,2.4471);
+	this.shape_15.setTransform(191.9646,263.37,2.447,2.4471);
 	this.shape_16 = new cjs.Shape();
 	this.shape_16.graphics.f("#231916").s().p("AgUAnIAAgZIAHAAIAAATIAyAAIAAAGgAAcATIAAg5IAHAAIAAA5gAgkAEIAIgEIAIgGIAFgIQACgFAAgGIAAgCIgSAAIAAgFIAqAAIAAAFIgRAAIAAACQAAAGACAEIAEAHIAHAHIAIADIgFAFIgFgDIgHgFIgEgFIgDgFIgDAGIgGAFIgHAGIgGADg");
-	this.shape_16.setTransform(169.7368,263.4923,2.447,2.4471);
+	this.shape_16.setTransform(170.7368,263.4923,2.447,2.4471);
 	this.shape_17 = new cjs.Shape();
 	this.shape_17.graphics.f("#231916").s().p("AAVAoIAAhPIAHAAIAAAhIANAAIAAAFIgNAAIAAApgAgoAVIAIgGIAIgIQAEgFACgGQACgGAAgHIAAgHIgTAAIAAgGIAtAAIAAAGIgTAAIAAAHQAAAHACAGQADAHADADIAGAIIAGAEIgEAFIgGgEIgGgHIgFgIIgDgFIgCAFIgFAIIgIAIIgHAGg");
-	this.shape_17.setTransform(148.9373,263.7371,2.447,2.4471);
+	this.shape_17.setTransform(149.9373,263.7371,2.447,2.4471);
 	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.shape_17},{t:this.shape_16},{t:this.shape_15},{t:this.shape_14},{t:this.shape_13},{t:this.shape_12},{t:this.shape_11},{t:this.shape_10},{t:this.shape_9},{t:this.shape_8},{t:this.shape_7},{t:this.shape_6},{t:this.shape_5},{t:this.shape_4},{t:this.shape_3},{t:this.shape_2},{t:this.shape_1},{t:this.shape}]}).wait(2375));
 	// menu_over
 	this.instance_3 = new lib.menubtn_over("single",12);
@@ -3011,7 +3023,7 @@ function handleComplete(evt,comp) {
 	var preloaderDiv = document.getElementById("_preload_div_");
 	preloaderDiv.style.display = 'none';
 	canvas.style.display = 'block';
-	exportRoot = new lib._3학년_4_80p_발자랑손자랑_20240310();
+	exportRoot = new lib._3학년_4_80p_발자랑손자랑_20240319();
 	stage = new lib.Stage(canvas);
 	stage.enableMouseOver();	
 	//Registers the "tick" event listener.
