@@ -30,17 +30,128 @@ lib.ssMetadata = [];
 (lib.AnMovieClip = function(){
 	this.actionFrames = [];
 	this.ignorePause = false;
+	this.currentSoundStreamInMovieclip;
+	this.soundStreamDuration = new Map();
+	this.streamSoundSymbolsList = [];
+	this.gotoAndPlayForStreamSoundSync = function(positionOrLabel){
+		cjs.MovieClip.prototype.gotoAndPlay.call(this,positionOrLabel);
+	}
 	this.gotoAndPlay = function(positionOrLabel){
+		this.clearAllSoundStreams();
+		var pos = this.timeline.resolve(positionOrLabel);
+		if (pos != null) { this.startStreamSoundsForTargetedFrame(pos); }
 		cjs.MovieClip.prototype.gotoAndPlay.call(this,positionOrLabel);
 	}
 	this.play = function(){
+		this.clearAllSoundStreams();
+		this.startStreamSoundsForTargetedFrame(this.currentFrame);
 		cjs.MovieClip.prototype.play.call(this);
 	}
 	this.gotoAndStop = function(positionOrLabel){
 		cjs.MovieClip.prototype.gotoAndStop.call(this,positionOrLabel);
+		this.clearAllSoundStreams();
 	}
 	this.stop = function(){
 		cjs.MovieClip.prototype.stop.call(this);
+		this.clearAllSoundStreams();
+	}
+	this.startStreamSoundsForTargetedFrame = function(targetFrame){
+		for(var index=0; index<this.streamSoundSymbolsList.length; index++){
+			if(index <= targetFrame && this.streamSoundSymbolsList[index] != undefined){
+				for(var i=0; i<this.streamSoundSymbolsList[index].length; i++){
+					var sound = this.streamSoundSymbolsList[index][i];
+					if(sound.endFrame > targetFrame){
+						var targetPosition = Math.abs((((targetFrame - sound.startFrame)/lib.properties.fps) * 1000));
+						var instance = playSound(sound.id);
+						var remainingLoop = 0;
+						if(sound.offset){
+							targetPosition = targetPosition + sound.offset;
+						}
+						else if(sound.loop > 1){
+							var loop = targetPosition /instance.duration;
+							remainingLoop = Math.floor(sound.loop - loop);
+							if(targetPosition == 0){ remainingLoop -= 1; }
+							targetPosition = targetPosition % instance.duration;
+						}
+						instance.loop = remainingLoop;
+						instance.position = Math.round(targetPosition);
+						this.InsertIntoSoundStreamData(instance, sound.startFrame, sound.endFrame, sound.loop , sound.offset);
+					}
+				}
+			}
+		}
+	}
+	this.InsertIntoSoundStreamData = function(soundInstance, startIndex, endIndex, loopValue, offsetValue){ 
+ 		this.soundStreamDuration.set({instance:soundInstance}, {start: startIndex, end:endIndex, loop:loopValue, offset:offsetValue});
+	}
+	this.clearAllSoundStreams = function(){
+		this.soundStreamDuration.forEach(function(value,key){
+			key.instance.stop();
+		});
+ 		this.soundStreamDuration.clear();
+		this.currentSoundStreamInMovieclip = undefined;
+	}
+	this.stopSoundStreams = function(currentFrame){
+		if(this.soundStreamDuration.size > 0){
+			var _this = this;
+			this.soundStreamDuration.forEach(function(value,key,arr){
+				if((value.end) == currentFrame){
+					key.instance.stop();
+					if(_this.currentSoundStreamInMovieclip == key) { _this.currentSoundStreamInMovieclip = undefined; }
+					arr.delete(key);
+				}
+			});
+		}
+	}
+	this.computeCurrentSoundStreamInstance = function(currentFrame){
+		if(this.currentSoundStreamInMovieclip == undefined){
+			var _this = this;
+			if(this.soundStreamDuration.size > 0){
+				var maxDuration = 0;
+				this.soundStreamDuration.forEach(function(value,key){
+					if(value.end > maxDuration){
+						maxDuration = value.end;
+						_this.currentSoundStreamInMovieclip = key;
+					}
+				});
+			}
+		}
+	}
+	this.getDesiredFrame = function(currentFrame, calculatedDesiredFrame){
+		for(var frameIndex in this.actionFrames){
+			if((frameIndex > currentFrame) && (frameIndex < calculatedDesiredFrame)){
+				return frameIndex;
+			}
+		}
+		return calculatedDesiredFrame;
+	}
+	this.syncStreamSounds = function(){
+		this.stopSoundStreams(this.currentFrame);
+		this.computeCurrentSoundStreamInstance(this.currentFrame);
+		if(this.currentSoundStreamInMovieclip != undefined){
+			var soundInstance = this.currentSoundStreamInMovieclip.instance;
+			if(soundInstance.position != 0){
+				var soundValue = this.soundStreamDuration.get(this.currentSoundStreamInMovieclip);
+				var soundPosition = (soundValue.offset?(soundInstance.position - soundValue.offset): soundInstance.position);
+				var calculatedDesiredFrame = (soundValue.start)+((soundPosition/1000) * lib.properties.fps);
+				if(soundValue.loop > 1){
+					calculatedDesiredFrame +=(((((soundValue.loop - soundInstance.loop -1)*soundInstance.duration)) / 1000) * lib.properties.fps);
+				}
+				calculatedDesiredFrame = Math.floor(calculatedDesiredFrame);
+				var deltaFrame = calculatedDesiredFrame - this.currentFrame;
+				if((deltaFrame >= 0) && this.ignorePause){
+					cjs.MovieClip.prototype.play.call(this);
+					this.ignorePause = false;
+				}
+				else if(deltaFrame >= 2){
+					this.gotoAndPlayForStreamSoundSync(this.getDesiredFrame(this.currentFrame,calculatedDesiredFrame));
+				}
+				else if(deltaFrame <= -2){
+					cjs.MovieClip.prototype.stop.call(this);
+					this.ignorePause = true;
+				}
+			}
+		}
 	}
 }).prototype = p = new cjs.MovieClip();
 // symbols:
@@ -488,9 +599,16 @@ if (reversed == null) { reversed = false; }
 	props.loop = loop;
 	props.reversed = reversed;
 	cjs.MovieClip.apply(this,[props]);
-	this.actionFrames = [0,510,511,512,1020,1021,1022,1867,1868,1869,2374];
+	this.actionFrames = [0,510,511,512,1020,1021,1022,1032,1867,1868,1869,2374];
+	this.streamSoundSymbolsList[0] = [{id:"stos_student",startFrame:0,endFrame:512,loop:1,offset:0}];
+	this.streamSoundSymbolsList[512] = [{id:"stos_expert",startFrame:512,endFrame:1022,loop:1,offset:0}];
+	this.streamSoundSymbolsList[1032] = [{id:"stos_singtosong",startFrame:1032,endFrame:1869,loop:1,offset:0}];
+	this.streamSoundSymbolsList[1869] = [{id:"stos_music",startFrame:1869,endFrame:2375,loop:1,offset:0}];
 	// timeline functions:
 	this.frame_0 = function() {
+		this.clearAllSoundStreams();
+		var soundInstance = playSound("stos_student",0);
+		this.InsertIntoSoundStreamData(soundInstance,0,512,1);
 		this.stop();
 		var _this = this;
 		/*메뉴 네비게이션*/
@@ -545,6 +663,8 @@ if (reversed == null) { reversed = false; }
 		this.play_btn.visible = true;
 	}
 	this.frame_512 = function() {
+		var soundInstance = playSound("stos_expert",0);
+		this.InsertIntoSoundStreamData(soundInstance,512,1022,1);
 		this.stop();
 	}
 	this.frame_1020 = function() {
@@ -558,6 +678,10 @@ if (reversed == null) { reversed = false; }
 	this.frame_1022 = function() {
 		this.stop();
 	}
+	this.frame_1032 = function() {
+		var soundInstance = playSound("stos_singtosong",0);
+		this.InsertIntoSoundStreamData(soundInstance,1032,1869,1);
+	}
 	this.frame_1867 = function() {
 		this.gotoAndStop('따라부르');
 		this.play_btn.visible = true;
@@ -567,6 +691,8 @@ if (reversed == null) { reversed = false; }
 		this.play_btn.visible = true;
 	}
 	this.frame_1869 = function() {
+		var soundInstance = playSound("stos_music",0);
+		this.InsertIntoSoundStreamData(soundInstance,1869,2375,1);
 		this.stop();
 	}
 	this.frame_2374 = function() {
@@ -574,7 +700,7 @@ if (reversed == null) { reversed = false; }
 		this.play_btn.visible = true;
 	}
 	// actions tween:
-	this.timeline.addTween(cjs.Tween.get(this).call(this.frame_0).wait(510).call(this.frame_510).wait(1).call(this.frame_511).wait(1).call(this.frame_512).wait(508).call(this.frame_1020).wait(1).call(this.frame_1021).wait(1).call(this.frame_1022).wait(845).call(this.frame_1867).wait(1).call(this.frame_1868).wait(1).call(this.frame_1869).wait(505).call(this.frame_2374).wait(1));
+	this.timeline.addTween(cjs.Tween.get(this).call(this.frame_0).wait(510).call(this.frame_510).wait(1).call(this.frame_511).wait(1).call(this.frame_512).wait(508).call(this.frame_1020).wait(1).call(this.frame_1021).wait(1).call(this.frame_1022).wait(10).call(this.frame_1032).wait(835).call(this.frame_1867).wait(1).call(this.frame_1868).wait(1).call(this.frame_1869).wait(505).call(this.frame_2374).wait(1));
 	// chapter_no
 	this.instance = new lib.main_no("single",15);
 	this.instance.setTransform(55.55,75.25,1,1,0,0,0,30.4,30.4);
@@ -2711,7 +2837,12 @@ lib.properties = {
 	fps: 24,
 	color: "#FFFFFF",
 	opacity: 1.00,
-	manifest: [],
+	manifest: [
+		{src:"sounds/stos_expert.mp3", id:"stos_expert"},
+		{src:"sounds/stos_music.mp3", id:"stos_music"},
+		{src:"sounds/stos_singtosong.mp3", id:"stos_singtosong"},
+		{src:"sounds/stos_student.mp3", id:"stos_student"}
+	],
 	preloads: []
 };
 // bootstrap callback support:
@@ -2825,12 +2956,21 @@ function init() {
 	dom_overlay_container = document.getElementById("dom_overlay_container");
 	var comp=AdobeAn.getComposition("D9BA16A548848F44B4EF264F80D1018A");
 	var lib=comp.getLibrary();
-	handleComplete({},comp);
+	var loader = new createjs.LoadQueue(false);
+	loader.installPlugin(createjs.Sound);
+	loader.addEventListener("complete", function(evt){handleComplete(evt,comp)});
+	var lib=comp.getLibrary();
+	loader.loadManifest(lib.properties.manifest);
 }
 function handleComplete(evt,comp) {
 	//This function is always called, irrespective of the content. You can use the variable "stage" after it is created in token create_stage.
 	var lib=comp.getLibrary();
 	var ss=comp.getSpriteSheet();
+	var queue = evt.target;
+	var ssMetadata = lib.ssMetadata;
+	for(i=0; i<ssMetadata.length; i++) {
+		ss[ssMetadata[i].name] = new createjs.SpriteSheet( {"images": [queue.getResult(ssMetadata[i].name)], "frames": ssMetadata[i].frames} )
+	}
 	var preloaderDiv = document.getElementById("_preload_div_");
 	preloaderDiv.style.display = 'none';
 	canvas.style.display = 'block';
@@ -2842,12 +2982,15 @@ function handleComplete(evt,comp) {
 		stage.addChild(exportRoot);
 		createjs.Ticker.framerate = lib.properties.fps;
 		createjs.Ticker.addEventListener("tick", stage);
+		createjs.Ticker.addEventListener("tick", AdobeAn.handleSoundStreamOnTick);
 	}	    
 	//Code to support hidpi screens and responsive scaling.
 	AdobeAn.makeResponsive(true,'both',true,1,[canvas,preloaderDiv,anim_container,dom_overlay_container]);	
 	AdobeAn.compositionLoaded(lib.properties.id);
 	fnStartAnimation();
 }
+function playSound(id, loop, offset) {
+	return createjs.Sound.play(id, {'interrupt':createjs.Sound.INTERRUPT_EARLY, 'loop': loop, 'offset': offset});}
 </script>
 <!-- write your code here -->
 </head>
